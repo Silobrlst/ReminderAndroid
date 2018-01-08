@@ -17,7 +17,17 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddEditRemindActivity" />
-        <activity android:name=".ConfigEditor"></activity>
+        <activity android:name=".ConfigEditor" />
+        <activity android:name=".EditOneTimePeriodActivity" />
+        <activity android:name=".EditWeekPeriodActivity" />
+        <activity android:name=".EditMonthPeriodActivity" />
+        <activity android:name=".EditYearPeriodActivity" />
+
+        <service
+            android:name=".Reminder"
+            android:exported="false" />
+
+        <activity android:name=".RemindActivity"></activity>
     </application>
 
 </manifest>

@@ -2,8 +2,6 @@ package com.example.qwe.test;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,20 +11,29 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     RemindsContainer remindsContainer;
 
+    Intent reminder;
+
     Loader loader = new Loader();
 
-    AlertDialog.Builder builder;
+    AlertDialog.Builder remindDialogBuilder;
 
     int selectedPos = 0;
+
+    int addRemindRequestCode = 0;
+    int editRemindRequestCode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setTitle("Напоминалка");
 
         ListView remindsList = (ListView) findViewById(R.id.remindsList);
         Button addButton = (Button) findViewById(R.id.addButton);
@@ -42,8 +49,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent addEditRemindActivity = new Intent(MainActivity.this, AddEditRemindActivity.class);
                 addEditRemindActivity.putExtra("remindId", "0"); //0 - создаем новую напоминалку
+                addEditRemindActivity.putExtra("data", "");
 
-                startActivityForResult(addEditRemindActivity, 0);
+                startActivityForResult(addEditRemindActivity, addRemindRequestCode);
             }
         });
 
@@ -55,51 +63,71 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        builder = new AlertDialog.Builder(this);
-
-        builder.setPositiveButton("Изменить", new DialogInterface.OnClickListener() {
+        //<диалог действий над напоминанием>========================================================
+        remindDialogBuilder = new AlertDialog.Builder(this);
+        remindDialogBuilder.setPositiveButton("Изменить...", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Intent addEditRemindActivity = new Intent(MainActivity.this, AddEditRemindActivity.class);
-                addEditRemindActivity.putExtra("remindId", remindsContainer.getItem(selectedPos).getId()); //0 - значит создаем новую напоминалку
+                Remind remind = remindsContainer.getItem(selectedPos);
 
-                startActivityForResult(addEditRemindActivity, 1);
+                Intent addEditRemindActivity = new Intent(MainActivity.this, AddEditRemindActivity.class);
+                addEditRemindActivity.putExtra("remindId", remind.getId());
+                addEditRemindActivity.putExtra("data", remind.toJson().toString());
+
+                startActivityForResult(addEditRemindActivity, editRemindRequestCode);
             }
         });
-        builder.setNeutralButton("Удалить", new DialogInterface.OnClickListener() {
+        remindDialogBuilder.setNeutralButton("Удалить", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Remind remind = remindsContainer.getItem(selectedPos);
                 loader.removeRemindById(MainActivity.this, remind.getId());
                 remindsContainer.remove(remind);
             }
         });
-        builder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
+        remindDialogBuilder.setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
             }
         });
+        //</диалог действий над напоминанием>=======================================================
 
         remindsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selectedPos = position;
-                builder.create().show();
+                remindDialogBuilder.create().show();
             }
         });
+
+        reminder = new Intent(this, Reminder.class);
+
+        this.startService(reminder);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
             String id = data.getExtras().getString("remindId");
+            String remindJsonStr = data.getExtras().getString("data");
 
-            if (requestCode == 0) {
-                Remind remind = loader.loadRemindById(this, id);
-                remindsContainer.add(remind);
+            try {
+                if (requestCode == addRemindRequestCode) {
+                    Remind remind = new Remind(id, new JSONObject(remindJsonStr));
+                    remindsContainer.add(remind);
+                    loader.saveRemindOnly(MainActivity.this, remind);
 
-            } else if (requestCode == 1) {
-                loader.loadRemindById(this, id, remindsContainer.getRemindById(id));
+                } else if (requestCode == editRemindRequestCode) {
+                    Remind remind = remindsContainer.getRemindById(id);
+                    JSONObject jsonObject = new JSONObject(remindJsonStr);
+                    remind.fromJson(jsonObject);
+                    loader.saveRemindOnly(MainActivity.this, remind);
+                }
+
+                remindsContainer.notifyDataSetChanged();
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

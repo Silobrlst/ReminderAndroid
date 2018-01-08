@@ -6,9 +6,6 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Iterator;
-import java.util.UUID;
-
 public class Loader {
     private static final String remindsJsonName = "reminds";
 
@@ -57,7 +54,7 @@ public class Loader {
         try{
             remindIn.setTime(remindJsonIn.getInt(hourJsonName), remindJsonIn.getInt(minuteJsonName));
             remindIn.setText(remindJsonIn.getString(textJsonName));
-            remindIn.setPeriodType(PeriodType.valueOf(remindJsonIn.getString(periodJsonName)));
+            remindIn.setPeriod(remindJsonIn.getJSONObject(periodJsonName));
 
         }catch (Exception ex){
             ex.printStackTrace();
@@ -92,39 +89,12 @@ public class Loader {
         }
     }
 
-    public void loadRemindById(Context contextIn, String idIn, Remind remindIn){
-        JSONObject configJson = JsonLoader.loadJSON(contextIn, configFileName);
-        validateConfigJson(configJson);
-
-        try{
-            JSONObject remindsJson = configJson.getJSONObject(remindsJsonName);
-
-            JSONArray ids = remindsJson.names();
-            if(ids != null){
-                for(int i=0; i<ids.length(); i++){
-                    if(idIn.equals(ids.getString(i))){
-                        loadRemind(remindsJson.getJSONObject(ids.getString(i)), remindIn);
-                        remindIn.setId(idIn);
-                    }
-                }
-            }
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-    public Remind loadRemindById(Context contextIn, String idIn){
-        Remind remind = new Remind();
-        loadRemindById(contextIn, idIn, remind);
-        return remind;
-    }
-
     private JSONObject saveRemind(Remind remindIn){
         JSONObject remindJson = new JSONObject();
 
         try{
             remindJson.put(textJsonName, remindIn.getText());
-            remindJson.put(periodJsonName, remindIn.getPeriodType());
+            remindJson.put(periodJsonName, remindIn.getPeriod().toJson());
             remindJson.put(hourJsonName, remindIn.getHour());
             remindJson.put(minuteJsonName, remindIn.getMinute());
 
