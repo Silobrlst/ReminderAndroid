@@ -9,4 +9,6 @@ public interface Period {
 
     void toJson(JSONObject jsonIn);
     JSONObject toJson();
+
+    void fromJson(JSONObject jsonIn);
 }

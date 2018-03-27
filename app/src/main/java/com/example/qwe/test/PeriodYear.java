@@ -39,30 +39,7 @@ public class PeriodYear implements Period{
         dec = new PeriodMonth();
     }
     PeriodYear(JSONObject jsonIn){
-        try{
-            JSONArray daysOfYearJson = jsonIn.getJSONArray("daysOfYear");
-
-            for(int i=0; i<daysOfYearJson.length(); i++){
-                daysOfYear.add(daysOfYearJson.getInt(i));
-            }
-
-            if (jsonIn.has("jan")) jan = new PeriodMonth(jsonIn.getJSONObject("jan"));
-            if (jsonIn.has("feb")) feb = new PeriodMonth(jsonIn.getJSONObject("feb"));
-            if (jsonIn.has("mar")) mar = new PeriodMonth(jsonIn.getJSONObject("mar"));
-            if (jsonIn.has("apr")) apr = new PeriodMonth(jsonIn.getJSONObject("apr"));
-            if (jsonIn.has("may")) may = new PeriodMonth(jsonIn.getJSONObject("may"));
-            if (jsonIn.has("jun")) jun = new PeriodMonth(jsonIn.getJSONObject("jun"));
-            if (jsonIn.has("jul")) jul = new PeriodMonth(jsonIn.getJSONObject("jul"));
-            if (jsonIn.has("aug")) aug = new PeriodMonth(jsonIn.getJSONObject("aug"));
-            if (jsonIn.has("sep")) sep = new PeriodMonth(jsonIn.getJSONObject("sep"));
-            if (jsonIn.has("oct")) oct = new PeriodMonth(jsonIn.getJSONObject("oct"));
-            if (jsonIn.has("nov")) nov = new PeriodMonth(jsonIn.getJSONObject("nov"));
-            if (jsonIn.has("dec")) dec = new PeriodMonth(jsonIn.getJSONObject("dec"));
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
+        fromJson(jsonIn);
     }
 
     @Override
@@ -177,5 +154,32 @@ public class PeriodYear implements Period{
         JSONObject json = new JSONObject();
         toJson(json);
         return json;
+    }
+
+    @Override
+    public void fromJson(JSONObject jsonIn){
+        try{
+            JSONArray daysOfYearJson = jsonIn.getJSONArray("daysOfYear");
+
+            for(int i=0; i<daysOfYearJson.length(); i++){
+                daysOfYear.add(daysOfYearJson.getInt(i));
+            }
+
+            if (jsonIn.has("jan")) jan = new PeriodMonth(jsonIn.getJSONObject("jan"));
+            if (jsonIn.has("feb")) feb = new PeriodMonth(jsonIn.getJSONObject("feb"));
+            if (jsonIn.has("mar")) mar = new PeriodMonth(jsonIn.getJSONObject("mar"));
+            if (jsonIn.has("apr")) apr = new PeriodMonth(jsonIn.getJSONObject("apr"));
+            if (jsonIn.has("may")) may = new PeriodMonth(jsonIn.getJSONObject("may"));
+            if (jsonIn.has("jun")) jun = new PeriodMonth(jsonIn.getJSONObject("jun"));
+            if (jsonIn.has("jul")) jul = new PeriodMonth(jsonIn.getJSONObject("jul"));
+            if (jsonIn.has("aug")) aug = new PeriodMonth(jsonIn.getJSONObject("aug"));
+            if (jsonIn.has("sep")) sep = new PeriodMonth(jsonIn.getJSONObject("sep"));
+            if (jsonIn.has("oct")) oct = new PeriodMonth(jsonIn.getJSONObject("oct"));
+            if (jsonIn.has("nov")) nov = new PeriodMonth(jsonIn.getJSONObject("nov"));
+            if (jsonIn.has("dec")) dec = new PeriodMonth(jsonIn.getJSONObject("dec"));
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 }

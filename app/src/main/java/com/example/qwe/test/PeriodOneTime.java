@@ -16,16 +16,7 @@ public class PeriodOneTime implements Period{
 
     }
     PeriodOneTime(JSONObject jsonIn){
-        try{
-            day = jsonIn.getInt("day");
-            month = jsonIn.getInt("month");
-            year = jsonIn.getInt("year");
-
-            selfDestruction = jsonIn.getBoolean("selfDestruct");
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        fromJson(jsonIn);
     }
 
     @Override
@@ -93,5 +84,19 @@ public class PeriodOneTime implements Period{
         JSONObject json = new JSONObject();
         toJson(json);
         return json;
+    }
+
+    @Override
+    public void fromJson(JSONObject jsonIn){
+        try{
+            day = jsonIn.getInt("day");
+            month = jsonIn.getInt("month");
+            year = jsonIn.getInt("year");
+
+            selfDestruction = jsonIn.getBoolean("selfDestruct");
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 }

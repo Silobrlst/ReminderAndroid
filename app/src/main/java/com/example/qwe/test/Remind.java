@@ -1,5 +1,7 @@
 package com.example.qwe.test;
 
+import android.util.Log;
+
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 
@@ -7,10 +9,12 @@ import java.util.UUID;
 
 public class Remind {
     private static final String textJsonName = "text";
-    private static final String soundJsonName = "sound";
     private static final String minuteJsonName = "minute";
     private static final String hourJsonName = "hour";
     private static final String periodJsonName = "period";
+
+    //TODO: sounds
+    private static final String soundJsonName = "sound";
 
     private String id;
     private String text;
@@ -108,6 +112,10 @@ public class Remind {
             return false;
         }
 
+        if(period == null){
+            return false;
+        }
+
         return period.checkIsToday();
     }
     public boolean checkTimeIsNow(){
@@ -120,9 +128,13 @@ public class Remind {
 
         try{
             remindJson.put(textJsonName, text);
-            remindJson.put(periodJsonName, period.toJson());
             remindJson.put(hourJsonName, getHour());
             remindJson.put(minuteJsonName, getMinute());
+
+            if(period != null){
+                Log.i("myTag", "fjgdlkfjg");
+                remindJson.put(periodJsonName, period.toJson());
+            }
 
         }catch (Exception ex){
             ex.printStackTrace();
@@ -131,7 +143,12 @@ public class Remind {
         return remindJson;
     }
     public void fromJson(JSONObject remindJsonIn){
-        ValidateJson.remind(remindJsonIn);
+        //<validation>==============================================================================
+        JsonUtil.validateJsonKey(remindJsonIn, JsonUtil.text, "");
+        JsonUtil.validateJsonKey(remindJsonIn, JsonUtil.minute, 0);
+        JsonUtil.validateJsonKey(remindJsonIn, JsonUtil.hour, 0);
+        JsonUtil.validateJsonKey(remindJsonIn, JsonUtil.period, PeriodType.OneTime);
+        //</validation>=============================================================================
 
         try{
             setTime(remindJsonIn.getInt(hourJsonName), remindJsonIn.getInt(minuteJsonName));

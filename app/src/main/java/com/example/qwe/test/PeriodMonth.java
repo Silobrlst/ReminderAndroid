@@ -26,22 +26,7 @@ public class PeriodMonth implements Period{
     }
 
     PeriodMonth(JSONObject jsonIn){
-        try{
-            JSONArray daysOfMonthJson = jsonIn.getJSONArray("daysOfMonth");
-
-            for(int i=0; i<daysOfMonthJson.length(); i++){
-                daysOfMonth.add(daysOfMonthJson.getInt(i));
-            }
-
-            if (jsonIn.has("week1")) week1 = new PeriodWeek(jsonIn.getJSONObject("week1"));
-            if (jsonIn.has("week2")) week2 = new PeriodWeek(jsonIn.getJSONObject("week2"));
-            if (jsonIn.has("week3")) week3 = new PeriodWeek(jsonIn.getJSONObject("week3"));
-            if (jsonIn.has("week4")) week4 = new PeriodWeek(jsonIn.getJSONObject("week4"));
-            if (jsonIn.has("week5")) week5 = new PeriodWeek(jsonIn.getJSONObject("week5"));
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        fromJson(jsonIn);
     }
 
     @Override
@@ -123,5 +108,25 @@ public class PeriodMonth implements Period{
         JSONObject json = new JSONObject();
         toJson(json);
         return json;
+    }
+
+    @Override
+    public void fromJson(JSONObject jsonIn){
+        try{
+            JSONArray daysOfMonthJson = jsonIn.getJSONArray("daysOfMonth");
+
+            for(int i=0; i<daysOfMonthJson.length(); i++){
+                daysOfMonth.add(daysOfMonthJson.getInt(i));
+            }
+
+            if (jsonIn.has("week1")) week1 = new PeriodWeek(jsonIn.getJSONObject("week1"));
+            if (jsonIn.has("week2")) week2 = new PeriodWeek(jsonIn.getJSONObject("week2"));
+            if (jsonIn.has("week3")) week3 = new PeriodWeek(jsonIn.getJSONObject("week3"));
+            if (jsonIn.has("week4")) week4 = new PeriodWeek(jsonIn.getJSONObject("week4"));
+            if (jsonIn.has("week5")) week5 = new PeriodWeek(jsonIn.getJSONObject("week5"));
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 }

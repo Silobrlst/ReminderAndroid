@@ -48,93 +48,25 @@ public class Loader {
         }
     }
 
-    private void loadRemind(JSONObject remindJsonIn, Remind remindIn){
-        validateRemindJson(remindJsonIn);
-
-        try{
-            remindIn.setTime(remindJsonIn.getInt(hourJsonName), remindJsonIn.getInt(minuteJsonName));
-            remindIn.setText(remindJsonIn.getString(textJsonName));
-            remindIn.setPeriod(remindJsonIn.getJSONObject(periodJsonName));
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-    private Remind loadRemind(JSONObject remindJsonIn){
-        Remind remind = new Remind();
-        loadRemind(remindJsonIn, remind);
-        return remind;
-    }
     public void loadReminds(Context contextIn, RemindsContainer remindsIn){
         JSONObject configJson = JsonLoader.loadJSON(contextIn, configFileName);
         validateConfigJson(configJson);
 
         try{
-            JSONObject remindsJson = configJson.getJSONObject(remindsJsonName);
-
-            JSONArray ids = remindsJson.names();
-            if(ids != null){
-                for(int i=0; i<ids.length(); i++){
-                    Remind remind = loadRemind(remindsJson.getJSONObject(ids.getString(i)));
-                    remind.setId(ids.getString(i));
-
-                    remindsIn.add(remind);
-                }
-            }
-
-            remindsIn.notifyDataSetChanged();
-
+            remindsIn.fromJson(configJson.getJSONObject(remindsJsonName));
         }catch (Exception ex){
             ex.printStackTrace();
         }
     }
 
-    private JSONObject saveRemind(Remind remindIn){
-        JSONObject remindJson = new JSONObject();
-
-        try{
-            remindJson.put(textJsonName, remindIn.getText());
-            remindJson.put(periodJsonName, remindIn.getPeriod().toJson());
-            remindJson.put(hourJsonName, remindIn.getHour());
-            remindJson.put(minuteJsonName, remindIn.getMinute());
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
-        return remindJson;
-    }
     public void saveReminds(Context contextIn, RemindsContainer remindsIn){
         JSONObject configJson = new JSONObject();
-
-        try{
-            JSONObject remindsJson = configJson.getJSONObject(remindsJsonName);
-
-            for(int i=0; i<remindsIn.getCount(); i++){
-                remindsJson.put(remindsIn.getItem(i).getId(), saveRemind(remindsIn.getItem(i)));
-            }
-
-            configJson.put(remindsJsonName, remindsJson);
-
-            JsonLoader.saveJSON(contextIn, configFileName, configJson);
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
-    //сохраняет одну напомниалку в файл
-    public void saveRemindOnly(Context contextIn, Remind remindIn){
-        JSONObject configJson = JsonLoader.loadJSON(contextIn, configFileName);
         validateConfigJson(configJson);
 
         try{
-            JSONObject remindsJson = configJson.getJSONObject(remindsJsonName);
-
-            remindsJson.put(remindIn.getId(), saveRemind(remindIn));
+            configJson.put(remindsJsonName, remindsIn.toJson());
 
             JsonLoader.saveJSON(contextIn, configFileName, configJson);
-
         }catch (Exception ex){
             ex.printStackTrace();
         }

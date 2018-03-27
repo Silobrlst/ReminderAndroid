@@ -2,6 +2,7 @@ package com.example.qwe.test;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.annotation.Nullable;
 
 import java.util.Timer;
@@ -9,6 +10,8 @@ import java.util.TimerTask;
 
 public class Reminder extends IntentService {
     Loader loader = new Loader();
+
+    MediaPlayer ring;
 
     public Reminder() {
         super("Reminder");
@@ -27,6 +30,9 @@ public class Reminder extends IntentService {
             }
         }
 
+        ring = MediaPlayer.create(Reminder.this, R.raw.nextel);
+        ring.setLooping(true);
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -44,6 +50,8 @@ public class Reminder extends IntentService {
                         remindActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         remindActivity.putExtra("text", remind.getText());
                         startActivity(remindActivity);
+
+                        ring.start();
 
                         remindsToday.remove(remind);
                     }

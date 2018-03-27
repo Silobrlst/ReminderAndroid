@@ -16,15 +16,7 @@ public class PeriodWeek implements Period{
     }
 
     PeriodWeek(JSONObject jsonIn){
-        try{
-            JSONArray json = jsonIn.getJSONArray("daysOfWeek");
-
-            for(int i=0; i<json.length(); i++){
-                daysOfWeek.add(json.getInt(i));
-            }
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+        fromJson(jsonIn);
     }
 
     @Override
@@ -76,5 +68,18 @@ public class PeriodWeek implements Period{
         JSONObject json = new JSONObject();
         toJson(json);
         return json;
+    }
+
+    @Override
+    public void fromJson(JSONObject jsonIn){
+        try{
+            JSONArray json = jsonIn.getJSONArray("daysOfWeek");
+
+            for(int i=0; i<json.length(); i++){
+                daysOfWeek.add(json.getInt(i));
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 }

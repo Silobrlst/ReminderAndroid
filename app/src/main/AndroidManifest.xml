@@ -27,7 +27,10 @@
             android:name=".Reminder"
             android:exported="false" />
 
-        <activity android:name=".RemindActivity"></activity>
+        <activity android:name=".RemindActivity" />
+        <activity android:name=".CancelsActivity" />
+        <activity android:name=".AddEditCancelForPeriodActivity" />
+        <activity android:name=".AddEditCancelNextDaysActivity"></activity>
     </application>
 
 </manifest>

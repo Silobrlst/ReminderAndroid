@@ -2,6 +2,7 @@ package com.example.qwe.test;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -113,15 +114,18 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 if (requestCode == addRemindRequestCode) {
+
                     Remind remind = new Remind(id, new JSONObject(remindJsonStr));
                     remindsContainer.add(remind);
-                    loader.saveRemindOnly(MainActivity.this, remind);
+
+                    loader.saveReminds(MainActivity.this, remindsContainer);
 
                 } else if (requestCode == editRemindRequestCode) {
                     Remind remind = remindsContainer.getRemindById(id);
                     JSONObject jsonObject = new JSONObject(remindJsonStr);
                     remind.fromJson(jsonObject);
-                    loader.saveRemindOnly(MainActivity.this, remind);
+
+                    loader.saveReminds(MainActivity.this, remindsContainer);
                 }
 
                 remindsContainer.notifyDataSetChanged();
